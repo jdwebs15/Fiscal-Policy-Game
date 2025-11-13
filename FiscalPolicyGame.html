@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fiscal Policy Competitive Game – OST Edition</title>
+  <style>
+    body{
+      font-family:"Segoe UI",Arial,sans-serif;
+      background:linear-gradient(#e6ebef,#b0bec5);
+      margin:0;padding:0;text-align:center;
+    }
+    h1{color:#0d47a1;}
+    button{
+      background-color:#1565c0;color:white;border:none;border-radius:10px;
+      padding:10px 20px;font-size:16px;margin:5px;cursor:pointer;
+    }
+    button:hover{background-color:#0d47a1;}
+    button:disabled{opacity:0.6;cursor:not-allowed;}
+    #intro,#game,#endScreen{display:none;}
+    #ecoBox{
+      width:220px;height:150px;
+      background-color:#cfd8dc;border:2px solid #37474f;border-radius:8px;
+      display:flex;justify-content:center;align-items:center;
+      margin:20px auto;transition:all 1s ease;
+      box-shadow:0 0 10px rgba(0,0,0,0.2);
+    }
+    #questionBox{
+      background:white;border-radius:10px;padding:15px;width:70%;
+      margin:10px auto;box-shadow:0 0 10px rgba(0,0,0,0.2);
+    }
+    #feedback{font-weight:bold;margin-top:10px;min-height:25px;}
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;
+      background:#1565c0;color:white;padding:10px 20px;
+      flex-wrap:wrap;gap:10px;
+    }
+    input[type="text"]{
+      padding:8px;font-size:16px;border-radius:6px;border:1px solid #bbb;
+      width:260px;
+    }
+  </style>
+</head>
+<body>
+  <div id="intro">
+    <h1>Fiscal Policy Challenge – OST Edition</h1>
+    <p>Enter your name to begin. You will serve as a <b>Senator</b> making fiscal policy decisions.<br>
+      Answer all 30 OST-aligned scenarios correctly to achieve 100% Fiscal Mastery.</p>
+    <input id="nameInput" type="text" placeholder="Enter your name"/>
+    <br><br>
+    <button id="startBtn">Start Game</button>
+  </div>
+
+  <div id="game">
+    <div class="topbar">
+      <div id="senatorName"></div>
+      <div id="scoreDisplay"></div>
+      <div id="questionCount"></div>
+    </div>
+
+    <div id="ecoBox">Economy / Employment</div>
+
+    <div id="questionBox">
+      <div id="questionText"></div>
+      <div id="feedback"></div>
+      <div id="options"></div>
+    </div>
+  </div>
+
+  <div id="endScreen">
+    <h1>Congratulations!</h1>
+    <p id="finalMessage"></p>
+    <p id="timestamp"></p>
+  </div>
+
+  <!-- IMPORTANT: keep game.js in the same folder as this HTML file -->
+  <script src="game.js" defer></script>
+</body>
+</html>
