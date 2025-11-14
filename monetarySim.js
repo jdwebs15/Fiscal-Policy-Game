@@ -194,3 +194,4 @@ function endGame(){
   finalMessage.textContent =
     playerName + ", your final score is " + score + "/" + shuffledQuestions.length + ".";
 }
+
