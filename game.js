@@ -1,5 +1,4 @@
 /* ================== FISCAL POLICY GAME JS ================== */
-/* Final, corrected, non-freezing version */
 
 /* ================== QUESTIONS ================== */
 const questions = [
@@ -128,10 +127,11 @@ function checkAnswer(choice, btn) {
   const q = shuffledQuestions[currentIndex];
   const buttons = options.querySelectorAll("button");
 
-  // Disable all buttons initially
-  buttons.forEach(b => b.disabled = true);
+  const isCorrect = q.correct.includes(choice);
 
-  if (q.correct.includes(choice)) {
+  if (isCorrect) {
+    // Correct: lock in the answer, then move on
+    buttons.forEach(b => b.disabled = true);
     btn.style.backgroundColor = "#4caf50";
     feedback.textContent = "✅ Correct!";
     score++;
@@ -148,17 +148,11 @@ function checkAnswer(choice, btn) {
     }, 1800);
 
   } else {
-    // WRONG ANSWER
+    // Incorrect: disable ONLY the wrong button, let them try the others
+    btn.disabled = true;
     btn.style.backgroundColor = "#e53935";
-    feedback.textContent = "❌ Incorrect. Try again.";
-
-    // Re-enable buttons EXCEPT the one just clicked
-    buttons.forEach(b => {
-      const id = b.dataset.id;
-      if (id !== choice) {
-        b.disabled = false;
-      }
-    });
+    feedback.textContent = "❌ Incorrect. Try another option.";
+    // All other buttons stay enabled → no possible lock
   }
 }
 
@@ -189,4 +183,3 @@ function endGame() {
   timestamp.textContent =
     "Completed on " + now.toLocaleDateString() + " at " + now.toLocaleTimeString();
 }
-
