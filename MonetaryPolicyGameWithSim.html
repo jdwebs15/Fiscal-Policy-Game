@@ -1,112 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monetary Policy Game – OST Edition</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Monetary Policy Game with Simulator – OST Edition</title>
 
 <style>
-  body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(#ffffff, #ececec);
-    margin: 0;
-    padding: 0;
-    text-align: center;
-  }
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(#e6ebef, #b0bec5);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
 
-  h1 {
-    color: #b71c1c;
-    margin-top: 20px;
-  }
+h1 { color: #0d47a1; }
 
-  #game, #endScreen {
-    display: none;
-  }
+button {
+  background-color: #1565c0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 5px;
+  cursor: pointer;
+}
+button:hover { background-color: #0d47a1; }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-  button {
-    background-color: #000000;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 20px;
-    margin: 5px;
-    cursor: pointer;
-    font-size: 16px;
-  }
+#intro, #game, #endScreen {
+  display: none;
+}
 
-  button:hover {
-    background-color: #b71c1c;
-  }
+#ecoBox {
+  width: 230px;
+  height: 160px;
+  background-color: #cfd8dc;
+  border: 2px solid #37474f;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  transition: all 1s ease;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
 
-  #ecoBox {
-    width: 240px;
-    height: 170px;
-    background-color: #e0e0e0;
-    border: 2px solid #000000;
-    border-radius: 10px;
-    margin: 20px auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 1s ease;
-    font-size: 20px;
-    font-weight: bold;
-  }
+#questionBox {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  width: 75%;
+  margin: 10px auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
 
-  #questionBox {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
-    width: 70%;
-    margin: 15px auto;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  }
+#feedback {
+  font-weight: bold;
+  margin-top: 10px;
+  min-height: 25px;
+}
 
-  #feedback {
-    font-weight: bold;
-    margin-top: 10px;
-    min-height: 25px;
-  }
+/* Top bar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1565c0;
+  color: white;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 
-  #options button {
-    width: 90%;
-    max-width: 350px;
-    margin-top: 8px;
-  }
+/* Input styling */
+input[type="text"] {
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  width: 260px;
+}
+
+/* Simulator layout */
+#simulatorBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin: 20px auto;
+  flex-wrap: wrap;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Sliders */
+.vertical-slider {
+  -webkit-appearance: none;
+  writing-mode: bt-lr;
+  width: 30px;
+  height: 200px;
+  cursor: pointer;
+}
+
+#options {
+  margin-top: 20px;
+}
 </style>
-</head>
 
+</head>
 <body>
 
-<h1>Monetary Policy Challenge – OST Edition</h1>
-
+<!-- INTRO -->
 <div id="intro">
-  <p>Enter your name to begin. You will act as a Federal Reserve policymaker.</p>
-  <input id="nameInput" type="text" placeholder="Enter your name" style="padding:8px;font-size:16px;">
+  <h1>Monetary Policy Challenge + Simulator – OST Edition</h1>
+  <p>Enter your name to begin. You will serve as a <b>Federal Reserve Advisor</b>.</p>
+  <input id="nameInput" type="text" placeholder="Enter your name"/>
   <br><br>
   <button id="startBtn">Start Game</button>
 </div>
 
+<!-- GAME -->
 <div id="game">
-  <h2 id="fedName"></h2>
-  <h3 id="scoreDisplay"></h3>
-  <h3 id="questionCount"></h3>
 
-  <div id="ecoBox">Economy / Inflation</div>
+  <div class="topbar">
+      <div id="fedName"></div>
+      <div id="scoreDisplay"></div>
+      <div id="questionCount"></div>
+  </div>
 
   <div id="questionBox">
     <div id="questionText"></div>
-    <div id="feedback"></div>
+    <div id="ecoBox">Economy / Inflation</div>
+
+    <div id="simulatorBox">
+
+      <!-- OMO -->
+      <div class="slider-group">
+        <span><b>Buy Securities</b></span>
+        <input type="range" id="sliderOMO" min="0" max="100" value="50" class="vertical-slider">
+        <span><b>Sell Securities</b></span>
+      </div>
+
+      <!-- Discount Rate -->
+      <div class="slider-group">
+        <span><b>Raise Discount Rate</b></span>
+        <input type="range" id="sliderDiscount" min="0" max="100" value="50" class="vertical-slider">
+        <span><b>Lower Discount Rate</b></span>
+      </div>
+
+      <!-- Reserve Requirement -->
+      <div class="slider-group">
+        <span><b>Raise Reserve Req.</b></span>
+        <input type="range" id="sliderReserve" min="0" max="100" value="50" class="vertical-slider">
+        <span><b>Lower Reserve Req.</b></span>
+      </div>
+
+    </div>
+
     <div id="options"></div>
+    <div id="feedback"></div>
   </div>
 </div>
 
+<!-- END SCREEN -->
 <div id="endScreen">
-  <h1>Great Work!</h1>
+  <h1>Congratulations!</h1>
   <p id="finalMessage"></p>
+  <p id="timestamp"></p>
 </div>
 
+<!-- JavaScript File -->
 <script src="monetarySim.js" defer></script>
+
 
 </body>
 </html>
