@@ -45,6 +45,7 @@ const questionText = document.getElementById("questionText");
 const feedback = document.getElementById("feedback");
 const options = document.getElementById("options");
 const ecoBox = document.getElementById("ecoBox");
+const finalMessage = document.getElementById("finalMessage");
 
 // ===================== STATE =====================
 let currentIndex = 0;
@@ -57,7 +58,10 @@ startBtn.addEventListener("click", startGame);
 
 function startGame(){
   playerName = nameInput.value.trim();
-  if(!playerName){ alert("Please enter your name first."); return; }
+  if(!playerName){
+    alert("Please enter your name first.");
+    return;
+  }
 
   intro.style.display = "none";
   game.style.display = "block";
@@ -87,19 +91,31 @@ function loadQuestion(){
   feedback.textContent = "";
   questionText.textContent = q.text;
 
+  // Reset options fresh each round
   options.innerHTML = "";
 
-  const toolOptions = [
+  const expansionTools = [
     {id:"buy", label:"Buy Securities (Expansion)"},
-    {id:"sell", label:"Sell Securities (Contraction)"},
     {id:"lowerRate", label:"Lower Discount Rate (Expansion)"},
+    {id:"lowerReserve", label:"Lower Reserve Requirement (Expansion)"}
+  ];
+
+  const contractionTools = [
+    {id:"sell", label:"Sell Securities (Contraction)"},
     {id:"raiseRate", label:"Raise Discount Rate (Contraction)"},
-    {id:"lowerReserve", label:"Lower Reserve Requirement (Expansion)"},
     {id:"raiseReserve", label:"Raise Reserve Requirement (Contraction)"}
   ];
 
+  let toolOptions = [];
+
+  if(q.correct === "expand"){
+    toolOptions = [...expansionTools];
+  }
+  if(q.correct === "contract"){
+    toolOptions = [...contractionTools];
+  }
   if(q.correct === "noChange"){
-    toolOptions.push({id:"noChange", label:"Take No Action"});
+    toolOptions = [{id:"noChange", label:"Take No Action"}];
   }
 
   toolOptions.forEach(opt => {
@@ -118,18 +134,19 @@ function checkAnswer(choice, btn){
 
   let correct = false;
 
-  if(q.correct === "expand" &&
-    (choice === "buy" || choice === "lowerRate" || choice === "lowerReserve")){
-      correct = true;
+  const expandSet = ["buy", "lowerRate", "lowerReserve"];
+  const contractSet = ["sell", "raiseRate", "raiseReserve"];
+
+  if(q.correct === "expand" && expandSet.includes(choice)){
+    correct = true;
   }
 
-  if(q.correct === "contract" &&
-    (choice === "sell" || choice === "raiseRate" || choice === "raiseReserve")){
-      correct = true;
+  if(q.correct === "contract" && contractSet.includes(choice)){
+    correct = true;
   }
 
   if(q.correct === "noChange" && choice === "noChange"){
-      correct = true;
+    correct = true;
   }
 
   if(correct){
@@ -160,19 +177,19 @@ function nextQuestion(){
 // ===================== ANIMATIONS =====================
 function animateBox(type){
   if(type === "expand"){
-    ecoBox.style.transform = "scale(1.3)";
-    ecoBox.style.background = "#ffebee";
+    ecoBox.style.transform = "scale(1.25)";
+    ecoBox.style.background = "#ffcdd2";
     ecoBox.textContent = "Expansion";
   }
   if(type === "contract"){
     ecoBox.style.transform = "scale(0.8)";
-    ecoBox.style.background = "#e0e0e0";
+    ecoBox.style.background = "#d7ccc8";
     ecoBox.textContent = "Contraction";
   }
   if(type === "noChange"){
     ecoBox.style.transform = "scale(1)";
     ecoBox.style.background = "#eeeeee";
-    ecoBox.textContent = "No Action Needed";
+    ecoBox.textContent = "Stable – No Action";
   }
 }
 
@@ -180,6 +197,6 @@ function animateBox(type){
 function endGame(){
   game.style.display = "none";
   endScreen.style.display = "block";
-  endScreen.querySelector("#finalMessage").textContent =
+  finalMessage.textContent =
     playerName + ", your final score is " + score + "/" + questions.length + ".";
 }
