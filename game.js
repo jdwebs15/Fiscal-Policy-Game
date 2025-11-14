@@ -1,5 +1,5 @@
 /* ================== FISCAL POLICY GAME JS ================== */
-/* Clean, validated, no syntax errors, fully OST aligned       */
+/* Final, corrected, non-freezing version */
 
 /* ================== QUESTIONS ================== */
 const questions = [
@@ -117,7 +117,7 @@ function loadQuestion() {
   optionSet.forEach(opt => {
     const btn = document.createElement("button");
     btn.textContent = opt.label;
-    btn.dataset.id = opt.id;   // FIX: store ID properly
+    btn.dataset.id = opt.id;
     btn.addEventListener("click", () => checkAnswer(opt.id, btn));
     options.appendChild(btn);
   });
@@ -126,8 +126,9 @@ function loadQuestion() {
 /* ================== CHECK ANSWER ================== */
 function checkAnswer(choice, btn) {
   const q = shuffledQuestions[currentIndex];
-
   const buttons = options.querySelectorAll("button");
+
+  // Disable all buttons initially
   buttons.forEach(b => b.disabled = true);
 
   if (q.correct.includes(choice)) {
@@ -144,15 +145,17 @@ function checkAnswer(choice, btn) {
       } else {
         endGame();
       }
-    }, 2000);
-  } else {
-    btn.style.backgroundColor = "#e53935";
-    feedback.textContent = "❌ Incorrect.";
+    }, 1800);
 
-    // FIX: re-enable only incorrect ones correctly using IDs
+  } else {
+    // WRONG ANSWER
+    btn.style.backgroundColor = "#e53935";
+    feedback.textContent = "❌ Incorrect. Try again.";
+
+    // Re-enable buttons EXCEPT the one just clicked
     buttons.forEach(b => {
       const id = b.dataset.id;
-      if (!q.correct.includes(id)) {
+      if (id !== choice) {
         b.disabled = false;
       }
     });
@@ -186,6 +189,4 @@ function endGame() {
   timestamp.textContent =
     "Completed on " + now.toLocaleDateString() + " at " + now.toLocaleTimeString();
 }
-
-
 
