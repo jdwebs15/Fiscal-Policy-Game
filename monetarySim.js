@@ -1,6 +1,4 @@
-/* ===================== MONETARY POLICY GAME – FINAL NON-FREEZING VERSION ===================== */
-
-/* ===================== QUESTIONS ===================== */
+// ===================== QUESTIONS =====================
 const questions = [
   {text:"Inflation is rising rapidly while unemployment is low.", correct:"contract"},
   {text:"Borrowing and spending are slowing, and unemployment is rising.", correct:"expand"},
@@ -34,7 +32,7 @@ const questions = [
   {text:"The economy shows no concerning trends.", correct:"noChange"}
 ];
 
-/* ===================== DOM HANDLES ===================== */
+// ===================== DOM HANDLES =====================
 const intro = document.getElementById("intro");
 const game = document.getElementById("game");
 const endScreen = document.getElementById("endScreen");
@@ -49,17 +47,18 @@ const options = document.getElementById("options");
 const ecoBox = document.getElementById("ecoBox");
 const finalMessage = document.getElementById("finalMessage");
 
-/* ===================== STATE ===================== */
+// ===================== STATE =====================
 let currentIndex = 0;
 let score = 0;
 let shuffledQuestions = [];
 let playerName = "";
 
-/* ===================== INIT ===================== */
+// ===================== INIT =====================
 startBtn.addEventListener("click", startGame);
 
 function startGame(){
   playerName = nameInput.value.trim();
+
   if(!playerName){
     alert("Please enter your name first.");
     return;
@@ -67,6 +66,7 @@ function startGame(){
 
   intro.style.display = "none";
   game.style.display = "block";
+
   fedName.textContent = "Federal Reserve Advisor " + playerName;
 
   shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
@@ -77,43 +77,36 @@ function startGame(){
   loadQuestion();
 }
 
-/* ===================== SCORE ===================== */
 function updateScore(){
   scoreDisplay.textContent = "Score: " + score;
-  questionCount.textContent = "Question " + (currentIndex + 1) + " of " + shuffledQuestions.length;
+  questionCount.textContent =
+    "Question " + (currentIndex + 1) + " of " + shuffledQuestions.length;
 }
 
-/* ===================== LOAD QUESTION ===================== */
+// ===================== LOAD QUESTION =====================
 function loadQuestion(){
   const q = shuffledQuestions[currentIndex];
 
   ecoBox.style.transform = "scale(1)";
-  ecoBox.style.background = "#e0e0e0";
+  ecoBox.style.backgroundColor = "#e0e0e0";
   ecoBox.textContent = "Economy / Inflation";
 
   feedback.textContent = "";
   questionText.textContent = q.text;
+
   options.innerHTML = "";
 
-  const expansion = [
+  const allTools = [
     {id:"buy", label:"Buy Securities (Expansion)"},
     {id:"lowerRate", label:"Lower Discount Rate (Expansion)"},
-    {id:"lowerReserve", label:"Lower Reserve Requirement (Expansion)"}
-  ];
-
-  const contraction = [
+    {id:"lowerReserve", label:"Lower Reserve Requirement (Expansion)"},
     {id:"sell", label:"Sell Securities (Contraction)"},
     {id:"raiseRate", label:"Raise Discount Rate (Contraction)"},
-    {id:"raiseReserve", label:"Raise Reserve Requirement (Contraction)"}
+    {id:"raiseReserve", label:"Raise Reserve Requirement (Contraction)"},
+    {id:"noChange", label:"Take No Action"}
   ];
 
-  let tools = [];
-
-  if (q.correct === "expand") tools = expansion;
-  if (q.correct === "contract") tools = contraction;
-  if (q.correct === "noChange") tools = [{id:"noChange", label:"Take No Action"}];
-
-  tools.forEach(opt => {
+  allTools.forEach(opt => {
     const btn = document.createElement("button");
     btn.textContent = opt.label;
     btn.dataset.id = opt.id;
@@ -122,45 +115,61 @@ function loadQuestion(){
   });
 }
 
-/* ===================== CHECK ANSWER ===================== */
+// ===================== CHECK ANSWER =====================
 function checkAnswer(choice, btn){
   const q = shuffledQuestions[currentIndex];
   const buttons = options.querySelectorAll("button");
 
+  // Disable all buttons briefly
   buttons.forEach(b => b.disabled = true);
 
-  const expandSet = ["buy","lowerRate","lowerReserve"];
-  const contractSet = ["sell","raiseRate","raiseReserve"];
+  const expandSet = ["buy", "lowerRate", "lowerReserve"];
+  const contractSet = ["sell", "raiseRate", "raiseReserve"];
 
   let correct = false;
 
-  if (q.correct === "expand" && expandSet.includes(choice)) correct = true;
-  if (q.correct === "contract" && contractSet.includes(choice)) correct = true;
-  if (q.correct === "noChange" && choice === "noChange") correct = true;
+  if(q.correct === "expand" && expandSet.includes(choice)){
+    correct = true;
+  }
+  if(q.correct === "contract" && contractSet.includes(choice)){
+    correct = true;
+  }
+  if(q.correct === "noChange" && choice === "noChange"){
+    correct = true;
+  }
 
-  if (correct){
+  if(correct){
     btn.style.backgroundColor = "#4caf50";
     feedback.textContent = "✅ Correct!";
     score++;
+
     animateBox(q.correct);
 
-    setTimeout(() => nextQuestion(), 1800);
-  }
-  else {
+    setTimeout(() => nextQuestion(), 1200);
+  } else {
     btn.style.backgroundColor = "#e53935";
     feedback.textContent = "❌ Incorrect. Try another option.";
 
-    // Re-enable all buttons EXCEPT the wrong one
+    // RE-ENABLE only wrong buttons (correct ones stay locked)
     buttons.forEach(b => {
-      if (b.dataset.id !== choice) b.disabled = false;
+      const id = b.dataset.id;
+
+      if(
+        (q.correct === "expand" && !expandSet.includes(id)) ||
+        (q.correct === "contract" && !contractSet.includes(id)) ||
+        (q.correct === "noChange" && id !== "noChange")
+      ){
+        b.disabled = false;
+      }
     });
   }
 }
 
-/* ===================== NEXT QUESTION ===================== */
+// ===================== NEXT QUESTION =====================
 function nextQuestion(){
   currentIndex++;
-  if (currentIndex < shuffledQuestions.length){
+
+  if(currentIndex < shuffledQuestions.length){
     updateScore();
     loadQuestion();
   } else {
@@ -168,30 +177,29 @@ function nextQuestion(){
   }
 }
 
-/* ===================== ANIMATIONS ===================== */
+// ===================== ANIMATIONS =====================
 function animateBox(type){
-  if (type === "expand"){
-    ecoBox.style.transform = "scale(1.2)";
-    ecoBox.style.background = "#c8e6c9";
+  if(type === "expand"){
+    ecoBox.style.transform = "scale(1.25)";
+    ecoBox.style.backgroundColor = "#c8e6c9";
     ecoBox.textContent = "Expansionary Policy";
   }
-  if (type === "contract"){
-    ecoBox.style.transform = "scale(0.85)";
-    ecoBox.style.background = "#ffcdd2";
+  if(type === "contract"){
+    ecoBox.style.transform = "scale(0.8)";
+    ecoBox.style.backgroundColor = "#ffcdd2";
     ecoBox.textContent = "Contractionary Policy";
   }
-  if (type === "noChange"){
+  if(type === "noChange"){
     ecoBox.style.transform = "scale(1)";
-    ecoBox.style.background = "#eeeeee";
-    ecoBox.textContent = "Stable – No Action";
+    ecoBox.style.backgroundColor = "#eeeeee";
+    ecoBox.textContent = "No Action Needed";
   }
 }
 
-/* ===================== END GAME ===================== */
+// ===================== END GAME =====================
 function endGame(){
   game.style.display = "none";
   endScreen.style.display = "block";
   finalMessage.textContent =
-    playerName + ", your final score is " + score + "/" + shuffledQuestions.length + ".";
+    `${playerName}, your final score is ${score}/${shuffledQuestions.length}.`;
 }
-
