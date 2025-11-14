@@ -1,4 +1,6 @@
-// ===================== QUESTIONS =====================
+/* ===================== MONETARY POLICY GAME – FINAL NON-FREEZING VERSION ===================== */
+
+/* ===================== QUESTIONS ===================== */
 const questions = [
   {text:"Inflation is rising rapidly while unemployment is low.", correct:"contract"},
   {text:"Borrowing and spending are slowing, and unemployment is rising.", correct:"expand"},
@@ -32,7 +34,7 @@ const questions = [
   {text:"The economy shows no concerning trends.", correct:"noChange"}
 ];
 
-// ===================== DOM HANDLES =====================
+/* ===================== DOM HANDLES ===================== */
 const intro = document.getElementById("intro");
 const game = document.getElementById("game");
 const endScreen = document.getElementById("endScreen");
@@ -47,13 +49,13 @@ const options = document.getElementById("options");
 const ecoBox = document.getElementById("ecoBox");
 const finalMessage = document.getElementById("finalMessage");
 
-// ===================== STATE =====================
+/* ===================== STATE ===================== */
 let currentIndex = 0;
 let score = 0;
 let shuffledQuestions = [];
 let playerName = "";
 
-// ===================== INIT =====================
+/* ===================== INIT ===================== */
 startBtn.addEventListener("click", startGame);
 
 function startGame(){
@@ -75,12 +77,13 @@ function startGame(){
   loadQuestion();
 }
 
+/* ===================== SCORE ===================== */
 function updateScore(){
   scoreDisplay.textContent = "Score: " + score;
-  questionCount.textContent = "Question " + (currentIndex+1) + " of " + questions.length;
+  questionCount.textContent = "Question " + (currentIndex + 1) + " of " + shuffledQuestions.length;
 }
 
-// ===================== LOAD QUESTION =====================
+/* ===================== LOAD QUESTION ===================== */
 function loadQuestion(){
   const q = shuffledQuestions[currentIndex];
 
@@ -90,83 +93,74 @@ function loadQuestion(){
 
   feedback.textContent = "";
   questionText.textContent = q.text;
-
-  // Reset options fresh each round
   options.innerHTML = "";
 
-  const expansionTools = [
+  const expansion = [
     {id:"buy", label:"Buy Securities (Expansion)"},
     {id:"lowerRate", label:"Lower Discount Rate (Expansion)"},
     {id:"lowerReserve", label:"Lower Reserve Requirement (Expansion)"}
   ];
 
-  const contractionTools = [
+  const contraction = [
     {id:"sell", label:"Sell Securities (Contraction)"},
     {id:"raiseRate", label:"Raise Discount Rate (Contraction)"},
     {id:"raiseReserve", label:"Raise Reserve Requirement (Contraction)"}
   ];
 
-  let toolOptions = [];
+  let tools = [];
 
-  if(q.correct === "expand"){
-    toolOptions = [...expansionTools];
-  }
-  if(q.correct === "contract"){
-    toolOptions = [...contractionTools];
-  }
-  if(q.correct === "noChange"){
-    toolOptions = [{id:"noChange", label:"Take No Action"}];
-  }
+  if (q.correct === "expand") tools = expansion;
+  if (q.correct === "contract") tools = contraction;
+  if (q.correct === "noChange") tools = [{id:"noChange", label:"Take No Action"}];
 
-  toolOptions.forEach(opt => {
+  tools.forEach(opt => {
     const btn = document.createElement("button");
     btn.textContent = opt.label;
+    btn.dataset.id = opt.id;
     btn.addEventListener("click", () => checkAnswer(opt.id, btn));
     options.appendChild(btn);
   });
 }
 
-// ===================== CHECK ANSWER =====================
+/* ===================== CHECK ANSWER ===================== */
 function checkAnswer(choice, btn){
   const q = shuffledQuestions[currentIndex];
   const buttons = options.querySelectorAll("button");
+
   buttons.forEach(b => b.disabled = true);
+
+  const expandSet = ["buy","lowerRate","lowerReserve"];
+  const contractSet = ["sell","raiseRate","raiseReserve"];
 
   let correct = false;
 
-  const expandSet = ["buy", "lowerRate", "lowerReserve"];
-  const contractSet = ["sell", "raiseRate", "raiseReserve"];
+  if (q.correct === "expand" && expandSet.includes(choice)) correct = true;
+  if (q.correct === "contract" && contractSet.includes(choice)) correct = true;
+  if (q.correct === "noChange" && choice === "noChange") correct = true;
 
-  if(q.correct === "expand" && expandSet.includes(choice)){
-    correct = true;
-  }
-
-  if(q.correct === "contract" && contractSet.includes(choice)){
-    correct = true;
-  }
-
-  if(q.correct === "noChange" && choice === "noChange"){
-    correct = true;
-  }
-
-  if(correct){
+  if (correct){
     btn.style.backgroundColor = "#4caf50";
     feedback.textContent = "✅ Correct!";
     score++;
     animateBox(q.correct);
-    setTimeout(() => nextQuestion(), 2000);
-  } else {
+
+    setTimeout(() => nextQuestion(), 1800);
+  }
+  else {
     btn.style.backgroundColor = "#e53935";
     feedback.textContent = "❌ Incorrect. Try another option.";
+
+    // Re-enable all buttons EXCEPT the wrong one
     buttons.forEach(b => {
-      if(b !== btn) b.disabled = false;
+      if (b.dataset.id !== choice) b.disabled = false;
     });
   }
 }
 
+/* ===================== NEXT QUESTION ===================== */
 function nextQuestion(){
   currentIndex++;
-  if(currentIndex < shuffledQuestions.length){
+  if (currentIndex < shuffledQuestions.length){
     updateScore();
     loadQuestion();
   } else {
@@ -174,29 +168,29 @@ function nextQuestion(){
   }
 }
 
-// ===================== ANIMATIONS =====================
+/* ===================== ANIMATIONS ===================== */
 function animateBox(type){
-  if(type === "expand"){
-    ecoBox.style.transform = "scale(1.25)";
+  if (type === "expand"){
+    ecoBox.style.transform = "scale(1.2)";
+    ecoBox.style.background = "#c8e6c9";
+    ecoBox.textContent = "Expansionary Policy";
+  }
+  if (type === "contract"){
+    ecoBox.style.transform = "scale(0.85)";
     ecoBox.style.background = "#ffcdd2";
-    ecoBox.textContent = "Expansion";
+    ecoBox.textContent = "Contractionary Policy";
   }
-  if(type === "contract"){
-    ecoBox.style.transform = "scale(0.8)";
-    ecoBox.style.background = "#d7ccc8";
-    ecoBox.textContent = "Contraction";
-  }
-  if(type === "noChange"){
+  if (type === "noChange"){
     ecoBox.style.transform = "scale(1)";
     ecoBox.style.background = "#eeeeee";
     ecoBox.textContent = "Stable – No Action";
   }
 }
 
-// ===================== END GAME =====================
+/* ===================== END GAME ===================== */
 function endGame(){
   game.style.display = "none";
   endScreen.style.display = "block";
   finalMessage.textContent =
-    playerName + ", your final score is " + score + "/" + questions.length + ".";
+    playerName + ", your final score is " + score + "/" + shuffledQuestions.length + ".";
 }
